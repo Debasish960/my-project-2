@@ -1,0 +1,11 @@
+Create a AWS IAM USER
+
+export AWS_ACCESS_KEY_ID=<Access Key of user>
+export AWS_SECRET_ACCESS_KEY=<Secret Access Key of user>
+export AWS_DEFAULT_REGION=ap-south-1
+
+terraform init
+terraform validate
+terraform plan
+terraform apply
+terraform destroy
