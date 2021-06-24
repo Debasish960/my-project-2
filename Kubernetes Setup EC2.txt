@@ -1,0 +1,93 @@
+https://github.com/vilasvarghese/CKA/blob/master/exercises/VagrantScripts/kmaster-1.8/bootstrap.sh
+
+cat >>/etc/hosts<<EOF
+172.31.40.200 kmaster kmaster
+172.31.40.40 kworker1 kworker1
+172.31.40.240 kworker2 kworker2
+EOF
+_______________________________________________________________
+#yum install -y -q yum-utils device-mapper-persistent-data lvm2
+#yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#yum install -y -q docker-ce
+****************************
+yum install docker -y
+systemctl start docker
+systemctl enable docker
+---------------------------
+setenforce 0
+sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
+
+systemctl disable firewalld
+systemctl stop firewalld
+
+cat >>/etc/sysctl.d/kubernetes.conf<<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+sysctl --system
+
+sed -i '/swap/d' /etc/fstab
+swapoff -a
+
+cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+yum install -y -q kubeadm-1.18.9 kubelet-1.18.9 kubectl-1.18.9
+
+systemctl enable kubelet
+systemctl start kubelet
+_________________
+<only on master>
+sudo kubeadm init  <copy o/p as below>
+
+To start using your cluster, you need to run the following as a regular user:
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+-------------------------------------------------------
+Then you can join any number of worker nodes by running the following on each as root:  <worker>
+
+kubeadm join 172.31.6.69:6443 --token 3x30l2.t01ru40f8e1rzcie --discovery-token-ca-cert-hash sha256:e1621e5ba3c53566b5908b55a01701b57d39f1abfe7a2c0f40e092b4ac1836ee
+----------------------------------------------
+
+export KUBECONFIG=/etc/kubernetes/kubelet.conf  <master>
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml  <master>
+kubectl get nodes
+_______________________________________________________________________________
+*******************************************************************************
+sudo kubeadm init
+"""""""""""""""""
+
+To start using your cluster, you need to run the following as a regular user:
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.31.6.69:6443 --token 3x30l2.t01ru40f8e1rzcie --discovery-token-ca-cert-hash sha256:e1621e5ba3c53566b5908b55a01701b57d39f1abfe7a2c0f40e092b4ac1836ee 
+-----------------------------
+
+sudo su
+cd
+pwd
+cp -r /root/.kube /var/lib/jenkins/
+cd /var/lib/jenkins/.kube
+chown jenkins:jenkins config
+Reboot 
+systemctl restart jenkins
