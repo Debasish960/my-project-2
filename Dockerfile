@@ -8,6 +8,6 @@ RUN cd /tmp && tar xvfz tomcat.tar.gz
 RUN cp -Rv /tmp/apache-tomcat-8.5.68/* /usr/local/tomcat/
 # Maintainer
 MAINTAINER "p.debasish046@gmail.com" 
-ADD */target/webapp.war /usr/local/tomcat/webapps
+ADD */target/time-tracker-web-0.5.0-SNAPSHOT.war /usr/local/tomcat/webapps
 EXPOSE 8080
 CMD /usr/local/tomcat/bin/catalina.sh run
