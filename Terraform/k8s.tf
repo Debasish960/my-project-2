@@ -23,12 +23,12 @@ variable "ami_k8s" {
 }
 
 variable "k8s_count" {
-  default = "3"
+  default = "4"
 }
 
 variable "instance_tags" {
   type = list
-  default = ["kmaster", "kworker1","kworker2"]
+  default = ["kmaster", "kworker1","kworker2","deployer"]
 }
 
 variable "k8s_type" {
