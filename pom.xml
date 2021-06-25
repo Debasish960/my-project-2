@@ -89,4 +89,14 @@
             </plugin>
         </plugins>
     </reporting>
+    <distributionManagement>
+      <repository>
+        <id>my-project</id>
+        <url>http://87.2.106.12:8081/nexus/content/repositories/maven-host-release</url>
+      </repository>
+      <snapshotRepository>
+        <id>my-project</id>
+        <url>http://87.2.106.12:8081/nexus/content/repositories/maven-host-snapshot</url>
+      </snapshotRepository>
+    </distributionManagement>     
 </project>
